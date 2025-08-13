@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <title>World Cyber Defense (WCD)</title>
+
+  <!-- TailwindCSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wcd: {
+              bg: "#050a0f",
+              card: "rgba(255,255,255,0.05)",
+              ring: "rgba(255,255,255,0.08)",
+              accent: "#12D6DF",
+              accent2: "#7C4DFF",
+            },
+          },
+          boxShadow: {
+            soft: "0 10px 40px -15px rgba(0,0,0,0.35)"
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body { background: #050a0f; color: #fff; }
+    .glass { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(8px); }
+    .ring-card { border: 1px solid rgba(255,255,255,0.08); }
+    .fade-in { opacity: 0; transform: translateY(16px); }
+    .reveal { opacity: 1 !important; transform: translateY(0) !important; }
+    .linkish { color: #12D6DF; }
+    .linkish:hover { text-decoration: underline; }
+  </style>
+
+  <!-- React + ReactDOM (UMD) with fallback -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script>
+  if (!window.React) {
+    console.warn("React failed to load, attempting fallback");
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.development.js";
+    script.onerror = () => console.error("React fallback failed to load");
+    document.head.appendChild(script);
+  }
+</script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script>
+  if (!window.ReactDOM) {
+    console.warn("ReactDOM failed to load, attempting fallback");
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.development.js";
+    script.onerror = () => console.error("ReactDOM fallback failed to load");
+    document.head.appendChild(script);
+  }
+</script>
+
+<!-- Babel (for in-browser JSX transform) with fallback -->
+<script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+<script>
+  if (!window.Babel) {
+    console.warn("Babel failed to load, attempting fallback");
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js";
+    script.onerror = () => console.error("Babel fallback failed to load");
+    document.head.appendChild(script);
+  }
+</script>
+<!-- anime.js (UMD -> window.anime) with fallback -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+  if (!window.anime) {
+    console.warn("Anime.js failed to load, attempting fallback");
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js";
+    script.onerror = () => console.error("Anime.js fallback failed to load");
+    document.head.appendChild(script);
+  }
+</script>
+<!-- Framer Motion (UMD -> window.framerMotion) -->
+<script src="https://cdn.jsdelivr.net/npm/framer-motion@11.11.7/dist/framer-motion.umd.js"></script>
+<script>
+  if (!window.framerMotion) {
+    console.error("Framer Motion failed to load");
+  }
+</script>
+<!-- Lucide (UMD -> window.lucide) with fallback -->
+<script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+<script>
+  if (!window.lucide) {
+    console.warn("Lucide failed to load, attempting fallback");
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/lucide@0.441.0/dist/umd/lucide.min.js";
+    script.onerror = () => console.error("Lucide fallback failed to load");
+    document.head.appendChild(script);
+  }
+</script>
+
+  <script type="text/babel">
+    const { useEffect, useMemo, useRef, useState } = React;
+    const { motion, AnimatePresence } = window.framerMotion;
+
+    // ----------------------- Utilities -----------------------
+    const routes = [
+      { path: "#home", label: "Home", icon: "shield" },
+      { path: "#mission", label: "Mission", icon: "zap" },
+      { path: "#teams", label: "Global Teams", icon: "users" },
+      { path: "#join", label: "Join", icon: "play" },
+      { path: "#threats", label: "Threat Feed", icon: "terminal" },
+      { path: "#resources", label: "Resources", icon: "book" },
+      { path: "#press", label: "Press", icon: "newspaper" },
+      { path: "#careers", label: "Careers", icon: "briefcase" },
+      { path: "#contact", label: "Contact", icon: "mail" },
+      { path: "#faq", label: "FAQ", icon: "circle-alert" },
+      { path: "#donate", label: "Donate", icon: "heart" },
+    ];
+
+    function useHashRoute() {
+      const [route, setRoute] = useState(window.location.hash || "#home");
+      useEffect(() => {
+        const onHashChange = () => setRoute(window.location.hash || "#home");
+        window.addEventListener("hashchange", onHashChange);
+        return () => window.removeEventListener("hashchange", onHashChange);
+      }, []);
+      return route;
+    }
+
+    const cx = (...c) => c.filter(Boolean).join(" ");
+
+    const Button = ({ as: As = "button", className = "", children, ...props }) => (
+      <As
+        className={cx(
+          "inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all active:scale-[0.98] ring-card",
+          "bg-white/10 hover:bg-white/15 border border-white/10",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </As>
+    );
+
+    const Pill = ({ children }) => (
+      <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
+        {children}
+      </span>
+    );
+
+    const SectionCard = ({ title, subtitle, children, className = "" }) => (
+      <div className={cx("rounded-3xl p-6 md:p-8 glass shadow-soft", className)}>
+        <div className="mb-4">
+          <h3 className="text-xl md:text-2xl font-semibold tracking-tight">{title}</h3>
+          {subtitle && <p className="mt-1 text-white/70 text-sm md:text-base">{subtitle}</p>}
+        </div>
+        {children}
+      </div>
+    );
+
+    function useRevealOnScroll() {
+  useEffect(() => {
+    const els = Array.from(document.querySelectorAll(".fade-in"));
+    if (!els.length) {
+      console.warn("No .fade-in elements found for animation");
+    }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("reveal");
+          if (!window.anime) {
+            console.warn("Anime.js not loaded, skipping fade-in animation");
+          } else {
+            anime({
+              targets: e.target,
+              translateY: [12, 0],
+              opacity: [0, 1],
+              duration: 600,
+              easing: "easeOutCubic"
+            });
+          }
+          io.unobserve(e.target);
+        }
+      }
+    }, { rootMargin: "0px 0px -5% 0px", threshold: 0.1 });
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+    // Call Lucide to hydrate icons after each mount/update
+    function useLucide() {
+  useEffect(() => {
+    if (window.lucide?.createIcons) {
+      window.lucide.createIcons();
+    } else {
+      console.warn("Lucide not loaded, icons may not render");
+    }
+  }, []);
+}
+
+    // ----------------------- Layout -----------------------
+    function TopNav({ route, setMobileOpen }) {
+      return (
+        <div className="fixed top-0 inset-x-0 z-40">
+          <div className="mx-auto max-w-7xl px-3 md:px-6">
+            <div className="mt-4 rounded-2xl glass border-white/10">
+              <div className="flex items-center justify-between px-3 md:px-5 py-3">
+                <a href="#home" className="flex items-center gap-3">
+                  <i data-lucide="shield" className="w-6 h-6 text-wcd-accent"></i>
+                  <span className="font-semibold tracking-tight">World Cyber Defense</span>
+                </a>
+                <div className="hidden md:flex items-center gap-1">
+                  {routes.map(r => (
+                    <a
+                      key={r.path}
+                      href={r.path}
+                      className={cx(
+                        "px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/10 transition",
+                        route === r.path ? "bg-white/10" : "text-white/80"
+                      )}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <i data-lucide={r.icon} className="w-4 h-4"></i> {r.label}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+                <div className="md:hidden">
+                  <button
+                    onClick={() => setMobileOpen(v => !v)}
+                    className="p-2 rounded-xl hover:bg-white/10 transition"
+                    aria-label="Open Menu"
+                  >
+                    <i data-lucide="menu" className="w-6 h-6"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function MobileNav({ open, onClose }) {
+      useLucide();
+      return (
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="absolute top-4 left-1/2 -translate-x-1/2 w-[92%] rounded-2xl glass p-4"
+                initial={{ y: -24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -24, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 320, damping: 26 }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <i data-lucide="shield" className="w-6 h-6 text-wcd-accent"></i>
+                    <span className="font-semibold">WCD</span>
+                  </div>
+                  <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/10">
+                    <i data-lucide="x" className="w-5 h-5"></i>
+                  </button>
+                </div>
+                <div className="grid grid-cols-1">
+                  {routes.map(r => (
+                    <a key={r.path} href={r.path} onClick={onClose}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10">
+                      <i data-lucide={r.icon} className="w-5 h-5"></i>
+                      <span className="text-sm font-medium">{r.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      );
+    }
+
+    function PageContainer({ children }) {
+  useRevealOnScroll();
+  useLucide();
+  // Route transition w/ anime on mount
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current || !window.anime) {
+      console.warn("Anime.js not loaded, skipping animation");
+      return;
+    }
+    anime.timeline({ autoplay: true })
+      .add({
+        targets: ref.current,
+        translateY: [16, 0],
+        opacity: [0, 1],
+        duration: 500,
+        easing: "easeOutCubic"
+      });
+  }, []);
+  return (
+    <div ref={ref} className="mx-auto max-w-7xl px-3 md:px-6 pt-28 pb-14">
+      {children}
+    </div>
+  );
+}
+    function Home() {
+  const heroRef = useRef(null);
+  useEffect(() => {
+    if (!heroRef.current || !window.anime) {
+      console.warn("Anime.js not loaded, skipping hero animation");
+      return;
+    }
+    anime({
+      targets: heroRef.current,
+      opacity: [0, 1],
+      translateY: [24, 0],
+      duration: 900,
+      easing: "easeOutExpo"
+    });
+  }, []);
+      return (
+        <PageContainer>
+          <section ref={heroRef} className="rounded-3xl glass p-8 md:p-12 shadow-soft">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <Pill>Nonprofit • Global</Pill>
+                  <Pill>Proactive Defense</Pill>
+                  <Pill>Open Collaboration</Pill>
+                </div>
+                <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
+                  Protecting the internet—<span className="text-wcd-accent">for everyone</span>.
+                </h1>
+                <p className="mt-3 text-white/75">
+                  World Cyber Defense (WCD) mobilizes volunteer experts across the globe to detect, deter,
+                  and disrupt cyber threats before they harm people and businesses.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Button as="a" href="#join"><i data-lucide="play" className="w-4 h-4"></i>Join the Mission</Button>
+                  <Button as="a" href="#threats" className="bg-white/0 hover:bg-white/10">
+                    <i data-lucide="terminal" className="w-4 h-4"></i>Live Threat Feed
+                  </Button>
+                </div>
+                <div className="mt-6 flex items-center gap-5 text-white/60 text-sm">
+                  <span className="inline-flex items-center gap-2"><i data-lucide="globe" className="w-4 h-4"></i> 60+ countries</span>
+                  <span className="inline-flex items-center gap-2"><i data-lucide="users" className="w-4 h-4"></i> 5k+ members</span>
+                  <span className="inline-flex items-center gap-2"><i data-lucide="zap" className="w-4 h-4"></i> preemptive AI</span>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-tr from-wcd-accent/20 to-wcd-accent2/20 blur-2xl rounded-3xl"></div>
+                <div className="relative grid grid-cols-2 gap-4">
+                  {["Proactive Monitoring", "Incident Response", "Threat Intel", "Education"].map((t, i) => (
+                    <div key={t} className="rounded-2xl glass p-4 fade-in" style={{ transitionDelay: `${i * 80}ms` }}>
+                      <div className="flex items-center gap-2 mb-2 text-white/80">
+                        <i data-lucide={i % 2 ? "activity" : "radar"} className="w-4 h-4"></i>
+                        <span className="text-sm font-medium">{t}</span>
+                      </div>
+                      <p className="text-xs text-white/60">
+                        {i===0 && "Continuous behavior-based detection powered by community AI."}
+                        {i===1 && "Coordinated, ethical, and transparent response playbooks."}
+                        {i===2 && "Open, curated intel feeds and reports for the public good."}
+                        {i===3 && "Free training and resources for defenders at every level."}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        </PageContainer>
+      );
+    }
+
+    function Mission() {
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-3 gap-6">
+            <SectionCard title="Our Mission" subtitle="Defend the open internet for everyone.">
+              <p className="text-white/75">
+                We coordinate global volunteer teams to preempt attacks, share intel, and assist victims.
+                We operate transparently, ethically, and in service of the public good.
+              </p>
+            </SectionCard>
+            <SectionCard title="Principles" subtitle="Transparent • Ethical • Effective">
+              <ul className="list-disc list-inside text-white/75 space-y-2">
+                <li>Public-first, bias-free threat handling</li>
+                <li>Privacy-preserving data practices</li>
+                <li>Open collaboration with industry & academia</li>
+              </ul>
+            </SectionCard>
+            <SectionCard title="Impact" subtitle="What we measure">
+              <ul className="text-white/75 space-y-2">
+                <li>Time-to-detect & time-to-mitigate</li>
+                <li>Incidents prevented vs. incidents responded</li>
+                <li>Community growth & education reach</li>
+              </ul>
+            </SectionCard>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Teams() {
+      const regions = [
+        { name: "North America", members: "1,800+", lead: "Alex R.", channels: 42 },
+        { name: "Europe", members: "1,300+", lead: "Dana K.", channels: 39 },
+        { name: "Asia", members: "900+", lead: "Kenji M.", channels: 31 },
+        { name: "South America", members: "450+", lead: "María L.", channels: 21 },
+        { name: "Oceania", members: "220+", lead: "Sam P.", channels: 12 },
+        { name: "Africa", members: "360+", lead: "Chinedu O.", channels: 18 },
+      ];
+      return (
+        <PageContainer>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {regions.map((r, i) => (
+              <SectionCard key={r.name} title={r.name} subtitle={`Lead: ${r.lead}`} className="fade-in" style={{ transitionDelay: `${i*60}ms` }}>
+                <div className="text-white/75">
+                  <p className="mb-2"><b>Members:</b> {r.members}</p>
+                  <p className="mb-2"><b>Ops Channels:</b> {r.channels}</p>
+                  <Button as="a" href="#join"><i data-lucide="plus" className="w-4 h-4"></i>Join this region</Button>
+                </div>
+              </SectionCard>
+            ))}
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Join() {
+      const [sent, setSent] = useState(false);
+      const onSubmit = (e) => {
+        e.preventDefault();
+        setSent(true);
+      };
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-2 gap-6">
+            <SectionCard title="Join WCD" subtitle="We welcome skilled defenders and learners alike.">
+              <form onSubmit={onSubmit} className="space-y-4">
+                <div>
+                  <label className="text-sm text-white/70">Name</label>
+                  <input className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                </div>
+                <div>
+                  <label className="text-sm text-white/70">Email</label>
+                  <input type="email" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                </div>
+                <div>
+                  <label className="text-sm text-white/70">Region</label>
+                  <select className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                    <option>North America</option>
+                    <option>Europe</option>
+                    <option>Asia</option>
+                    <option>South America</option>
+                    <option>Oceania</option>
+                    <option>Africa</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm text-white/70">Skills / Interest</label>
+                  <textarea rows="4" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="Blue team, threat intel, forensics, malware analysis, incident response..." />
+                </div>
+                <Button type="submit"><i data-lucide="rocket" className="w-4 h-4"></i>Submit</Button>
+                {sent && <p className="text-sm text-green-300">Thanks! We’ll be in touch.</p>}
+              </form>
+            </SectionCard>
+            <SectionCard title="Why Join?" subtitle="Make real impact. Learn with peers.">
+              <ul className="space-y-3 text-white/75">
+                <li className="flex items-start gap-3"><i data-lucide="shield" className="w-5 h-5 mt-0.5"></i> Help protect communities and small businesses.</li>
+                <li className="flex items-start gap-3"><i data-lucide="cpu" className="w-5 h-5 mt-0.5"></i> Work with pattern-based AI for preemptive defense.</li>
+                <li className="flex items-start gap-3"><i data-lucide="book-open" className="w-5 h-5 mt-0.5"></i> Access training, runbooks, and mentorship.</li>
+              </ul>
+            </SectionCard>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Threats() {
+      const all = useMemo(() => ([
+        { id: 1, sev: "High", region: "Europe", label: "Ransomware campaign targeting SMEs", ts: "2025-08-10 13:12 UTC" },
+        { id: 2, sev: "Medium", region: "North America", label: "Credential stuffing on edu portals", ts: "2025-08-10 09:20 UTC" },
+        { id: 3, sev: "Critical", region: "Asia", label: "Supply-chain compromise (package repo)", ts: "2025-08-09 22:41 UTC" },
+        { id: 4, sev: "Low", region: "Africa", label: "Phishing wave spoofing local ISP", ts: "2025-08-09 18:03 UTC" },
+        { id: 5, sev: "High", region: "South America", label: "Banking trojan updates & infra shift", ts: "2025-08-08 11:29 UTC" },
+      ]), []);
+      const [query, setQuery] = useState("");
+      const [sev, setSev] = useState("All");
+      const [region, setRegion] = useState("All");
+
+      const filtered = all.filter(i => {
+        const okSev = sev === "All" || i.sev === sev;
+        const okReg = region === "All" || i.region === region;
+        const okText = !query || i.label.toLowerCase().includes(query.toLowerCase());
+        return okSev && okReg && okText;
+      });
+
+      return (
+        <PageContainer>
+          <div className="rounded-3xl glass p-6 md:p-8 shadow-soft">
+            <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4">
+              <div className="flex-1">
+                <label className="text-sm text-white/70">Search</label>
+                <input value={query} onChange={e=>setQuery(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="malware, phishing, CVE-..." />
+              </div>
+              <div>
+                <label className="text-sm text-white/70">Severity</label>
+                <select value={sev} onChange={e=>setSev(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                  {["All","Low","Medium","High","Critical"].map(s=><option key={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-sm text-white/70">Region</label>
+                <select value={region} onChange={e=>setRegion(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                  {["All","North America","Europe","Asia","South America","Oceania","Africa"].map(s=><option key={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 grid md:grid-cols-2 gap-4">
+              {filtered.map(item => (
+                <div key={item.id} className="rounded-2xl ring-card p-4 bg-white/5 border border-white/10">
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex items-center gap-2">
+                      <i data-lucide="activity" className="w-4 h-4"></i>
+                      <span className={cx("text-xs px-2 py-0.5 rounded-full",
+                        item.sev==="Critical" && "bg-red-500/20",
+                        item.sev==="High" && "bg-orange-500/20",
+                        item.sev==="Medium" && "bg-yellow-500/20",
+                        item.sev==="Low" && "bg-green-500/20"
+                      )}>{item.sev}</span>
+                      <span className="text-xs text-white/60">• {item.region}</span>
+                    </div>
+                    <span className="text-[11px] text-white/50">{item.ts}</span>
+                  </div>
+                  <p className="mt-2 text-white/80">{item.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-4 text-xs text-white/50">
+              Demo data shown. Hook this to your WebSocket/REST to stream live intel.
+            </p>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Resources() {
+      const items = [
+        { t: "Incident Response Runbook", i: "book-open", d: "Step-by-step IR playbook for SMEs." },
+        { t: "Blue Team Starter Kit", i: "tool", d: "Free tools, guides, and labs." },
+        { t: "Threat Intel 101", i: "radar", d: "How to collect, analyze, and share intel." },
+        { t: "Secure-by-Default Checklist", i: "check-circle", d: "Harden your apps and infra." },
+      ];
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((x, i) => (
+              <SectionCard key={x.t} title={x.t} subtitle={x.d} className="fade-in" style={{ transitionDelay: `${i*70}ms` }}>
+                <Button as="a" href="#" className="bg-white/0 hover:bg-white/10">
+                  <i data-lucide={x.i} className="w-4 h-4"></i> View
+                </Button>
+              </SectionCard>
+            ))}
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Press() {
+      return (
+        <PageContainer>
+          <div className="rounded-3xl glass p-6 md:p-8 shadow-soft">
+            <h3 className="text-2xl font-semibold mb-4">Press & Media</h3>
+            <ul className="space-y-3 text-white/75">
+              <li>“WCD launches global defender network” — <span className="linkish">Tech Journal</span></li>
+              <li>“Volunteers stop ransomware wave” — <span className="linkish">Security Week</span></li>
+              <li>“Open intel feeds for all” — <span className="linkish">Open Net</span></li>
+            </ul>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Careers() {
+      const roles = [
+        { role: "Community Ops Lead", type: "Volunteer", loc: "Remote" },
+        { role: "Threat Intel Curator", type: "Volunteer", loc: "Remote" },
+        { role: "SOC Shift Coordinator", type: "Volunteer", loc: "Remote" },
+      ];
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-3 gap-6">
+            {roles.map((r) => (
+              <SectionCard key={r.role} title={r.role} subtitle={`${r.type} • ${r.loc}`}>
+                <p className="text-white/75 mb-4">Help coordinate defenders and keep operations smooth.</p>
+                <Button as="a" href="#join"><i data-lucide="play" className="w-4 h-4"></i>Apply</Button>
+              </SectionCard>
+            ))}
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Contact() {
+      const [ok, setOk] = useState(false);
+      const submit = (e) => { e.preventDefault(); setOk(true); };
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-2 gap-6">
+            <SectionCard title="Contact WCD" subtitle="We try to respond within 2–3 days.">
+              <form onSubmit={submit} className="space-y-4">
+                <div>
+                  <label className="text-sm text-white/70">Your Email</label>
+                  <input type="email" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                </div>
+                <div>
+                  <label className="text-sm text-white/70">Message</label>
+                  <textarea rows="5" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                </div>
+                <Button type="submit"><i data-lucide="send" className="w-4 h-4"></i>Send</Button>
+                {ok && <p className="text-sm text-green-300">Message sent!</p>}
+              </form>
+            </SectionCard>
+            <SectionCard title="Other Channels" subtitle="Connect with the community.">
+              <div className="space-y-3 text-white/75">
+                <div className="flex items-center gap-3">
+                  <i data-lucide="github" className="w-5 h-5"></i> GitHub: <a className="linkish" href="#">/wcd</a>
+                </div>
+                <div className="flex items-center gap-3">
+                  <i data-lucide="twitter" className="w-5 h-5"></i> X: <a className="linkish" href="#">@worldcyberdef</a>
+                </div>
+                <div className="flex items-center gap-3">
+                  <i data-lucide="mail" className="w-5 h-5"></i> Press: <a className="linkish" href="#">press@wcd.org</a>
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function FAQ() {
+      const faqs = [
+        { q: "Is WCD really free?", a: "Yes. We’re a nonprofit. Our intel, training, and help are free." },
+        { q: "How do I volunteer?", a: "Apply on the Join page. We onboard in waves per region." },
+        { q: "Can companies partner with WCD?", a: "Yes—via data sharing, sponsorships, or joint response drills." },
+      ];
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-2 gap-6">
+            {faqs.map((f, i) => (
+              <SectionCard key={i} title={f.q} subtitle={f.a} className="fade-in" style={{ transitionDelay: `${i*80}ms` }} />
+            ))}
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function Donate() {
+      return (
+        <PageContainer>
+          <div className="rounded-3xl glass p-8 shadow-soft text-center">
+            <h3 className="text-2xl font-semibold">Support WCD</h3>
+            <p className="mt-2 text-white/75 max-w-2xl mx-auto">
+              Your donation funds open training, infrastructure, and rapid-response efforts.
+            </p>
+            <div className="mt-6 flex gap-3 justify-center">
+              <Button as="a" href="#" className="bg-wcd-accent/20 border-wcd-accent/30">
+                <i data-lucide="credit-card" className="w-4 h-4"></i> Donate Once
+              </Button>
+              <Button as="a" href="#" className="bg-wcd-accent2/20 border-wcd-accent2/30">
+                <i data-lucide="refresh-cw" className="w-4 h-4"></i> Monthly
+              </Button>
+            </div>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    // ----------------------- Router -----------------------
+    function Router({ route }) {
+      return (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={route}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {route === "#home" && <Home />}
+            {route === "#mission" && <Mission />}
+            {route === "#teams" && <Teams />}
+            {route === "#join" && <Join />}
+            {route === "#threats" && <Threats />}
+            {route === "#resources" && <Resources />}
+            {route === "#press" && <Press />}
+            {route === "#careers" && <Careers />}
+            {route === "#contact" && <Contact />}
+            {route === "#faq" && <FAQ />}
+            {route === "#donate" && <Donate />}
+          </motion.div>
+        </AnimatePresence>
+      );
+    }
+
+    // ----------------------- App -----------------------
+    function App() {
+      const route = useHashRoute();
+      const [mobileOpen, setMobileOpen] = useState(false);
+
+      // default route
+      useEffect(() => {
+        if (!window.location.hash) {
+          window.location.hash = "#home";
+        }
+      }, []);
+
+      // close mobile on route change
+      useEffect(() => { setMobileOpen(false); }, [route]);
+
+      return (
+        <>
+          <TopNav route={route} setMobileOpen={setMobileOpen} />
+          <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
+          <Router route={route} />
+          <footer className="mx-auto max-w-7xl px-3 md:px-6 pb-10">
+            <div className="rounded-2xl glass p-4 flex flex-col md:flex-row items-center justify-between gap-3">
+              <p className="text-white/60 text-sm">© {new Date().getFullYear()} World Cyber Defense — nonprofit, global.</p>
+              <div className="flex items-center gap-3 text-white/70">
+                <a href="#press" className="hover:text-white">Press</a>
+                <span className="opacity-50">•</span>
+                <a href="#resources" className="hover:text-white">Resources</a>
+                <span className="opacity-50">•</span>
+                <a href="#contact" className="hover:text-white">Contact</a>
+              </div>
+            </div>
+          </footer>
+        </>
+      );
+    }
+
+    function ErrorBoundary({ children }) {
+  const [error, setError] = React.useState(null);
+  React.useEffect(() => {
+    const handleError = (msg, url, line, col, errorObj) => {
+      console.error("Global error:", { msg, url, line, col, errorObj });
+      setError(errorObj?.message || msg);
+    };
+    window.onerror = handleError;
+    window.addEventListener("unhandledrejection", (event) => {
+      console.error("Unhandled promise rejection:", event.reason);
+      setError(event.reason?.message || "Unhandled promise rejection");
+    });
+    return () => {
+      window.onerror = null;
+      window.removeEventListener("unhandledrejection", handleError);
+    };
+  }, []);
+  if (error) {
+    return (
+      <div className="text-red-500 p-4 text-center">
+        <h2>Error Rendering Page</h2>
+        <p>{error}</p>
+        <p>Check the console (F12) for details.</p>
+      </div>
+    );
+  }
+  return children;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <div style={{ color: "white", padding: "20px" }}>
+    <h1>Test Render</h1>
+    <p>If you see this, React is working.</p>
+  </div>
+);
+  </script>
+</div>
+<div id="root"></div>
+</body>
+</html>
