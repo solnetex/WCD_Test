@@ -225,7 +225,7 @@
               <div className="flex items-center justify-between px-3 md:px-5 py-3">
                 <a href="#home" className="flex items-center gap-3">
                   <i data-lucide="shield" className="w-6 h-6 text-wcd-accent"></i>
-                  <span className="font-semibold tracking-tight">World Cyber Defense</span>
+                  <span className="font-semibold tracking-tight"></span>
                 </a>
                 <div className="hidden md:flex items-center gap-1">
                   {routes.map(r => (
@@ -882,7 +882,7 @@
       <i data-lucide="x" className="w-5 h-5"></i> <a className="linkish" href="https://x.com/WCD_Global" target="_blank">@WCD_Global</a>
     </div>
     <div className="flex items-center gap-3">
-      <i data-lucide="globe" className="w-5 h-5"></i> Parent Company<a className="linkish" href="https://solnetex.com" target="_blank">Solnetex.com</a>
+      Our Discord<a className="linkish" href="https://discord.gg/HAYzNURGbz" target="_blank">Join Now</a>
     </div>
   </div>
 </SectionCard>
@@ -893,21 +893,71 @@
     }
 
     function FAQ() {
-      const faqs = [
-        { q: "Is WCD really free?", a: "Yes. We’re a nonprofit. Our intel, training, and help are free." },
-        { q: "How do I volunteer?", a: "Apply on the Join page. We onboard in waves per region." },
-        { q: "Can companies partner with WCD?", a: "Yes—via data sharing, sponsorships, or joint response drills." },
-      ];
-      return (
-        <PageContainer>
-          <div className="grid md:grid-cols-2 gap-6">
-            {faqs.map((f, i) => (
-              <SectionCard key={i} title={f.q} subtitle={f.a} className="fade-in" style={{ transitionDelay: `${i*80}ms` }} />
-            ))}
-          </div>
-        </PageContainer>
-      );
-    }
+  const faqs = [
+    { q: "Is WCD really free?", a: "Yes. We’re a nonprofit. Our intel, training, and help are free." },
+    { q: "How do I volunteer?", a: "Apply on the Join page. We onboard in waves per region." },
+    { q: "Can companies partner with WCD?", a: "Yes—via data sharing, sponsorships, or joint response drills." },
+    { q: "Who can join WCD?", a: "Anyone with cybersecurity skills, passion, or interest can apply. We have roles for beginners and experts." },
+    { q: "Do I need prior experience?", a: "No. While experience helps, we also train new members." },
+    { q: "How are teams structured?", a: "Teams are organized by region. Each region reports to its continent director, who coordinates with the COO and CEO." },
+    { q: "What roles are available?", a: "Roles include analyst, incident responder, threat hunter, penetration tester, malware researcher, forensics expert, SOC operator, trainer, coordinator, and more." },
+    { q: "How much time do I need to commit?", a: "Commitment varies per role. Some roles require a few hours per week, others more intensive." },
+    { q: "Are there leadership opportunities?", a: "Yes. Positions like team lead and continent director allow you to manage teams and projects." },
+    { q: "How does WCD handle sensitive data?", a: "We follow strict protocols. Member access to sensitive intel is controlled and monitored." },
+    { q: "Does WCD operate worldwide?", a: "Yes. We have teams in every continent except Antarctica." },
+    { q: "Is there a training program?", a: "Yes. WCD provides ongoing training, drills, and mentorship for members." },
+    { q: "How is WCD funded?", a: "For now, we do not take donations but we get our money from the owner." },
+    { q: "Can I participate remotely?", a: "Yes. Most roles are remote, though some local tasks may exist." },
+    { q: "How quickly can I join a team?", a: "We onboard members in waves. Timing depends on region demand and security vetting." },
+    { q: "Do I need to be an expert to help?", a: "Not at all. We value fresh perspectives and curiosity as much as experience." },
+    { q: "What kind of cybersecurity incidents does WCD respond to?", a: "From malware outbreaks to phishing campaigns, ransomware attacks, and large-scale data breaches." },
+    { q: "Can I suggest a new tool or method?", a: "Yes. WCD encourages innovation and improvement from all members." },
+    { q: "Do I get recognition for my work?", a: "Yes. Contributions are acknowledged internally and sometimes publicly, depending on sensitivity." },
+    { q: "Can I leave and rejoin later?", a: "Yes. Membership is flexible, though re-onboarding may be required for security purposes." },
+    { q: "Is WCD affiliated with governments?", a: "No. WCD is independent and nonprofit, though we collaborate with trusted agencies when necessary." },
+    { q: "How does WCD communicate internally?", a: "Via secure ops channels, Discord, encrypted chats, and structured reporting tools." },
+    { q: "Do I need special hardware or software?", a: "Basic cybersecurity tools and a secure connection suffice. Specific roles may require more specialized software." },
+    { q: "How are decisions made at WCD?", a: "Operational decisions are made by team leads and continent directors. Overall strategy is set by the COO and CEO." },
+    { q: "Can students join WCD?", a: "Yes. Students with interest in cybersecurity are welcome, and we provide mentorship and training." },
+    { q: "Does WCD do research?", a: "Yes. We analyze threats, vulnerabilities, and trends to improve global cybersecurity awareness." },
+    { q: "How can I report a cybersecurity incident?", a: "Members can report incidents via secure internal channels. Non-members can contact us via our website." },
+    { q: "What is WCD’s mission?", a: "To protect the internet and its users worldwide through free, expert-driven cybersecurity support." },
+  ];
+
+  const fadeInStyle = {
+    opacity: 0,
+    transform: 'translateY(10px)',
+    animation: 'fadeIn 0.3s forwards'
+  };
+
+  return (
+    <PageContainer>
+      <div className="grid md:grid-cols-2 gap-6">
+        {faqs.map((f, i) => (
+          <SectionCard 
+            key={i} 
+            title={f.q} 
+            subtitle={f.a} 
+            style={fadeInStyle} 
+          />
+        ))}
+      </div>
+
+      {/* Inline keyframes */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
+    </PageContainer>
+  );
+}
+
 
     function Donate() {
       return (
