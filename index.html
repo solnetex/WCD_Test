@@ -9,7 +9,6 @@
   <title>World Cyber Defense (WCD)</title>
 
   <!-- TailwindCSS (CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -30,6 +29,7 @@
       }
     }
   </script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     html, body { background: #050a0f; color: #fff; }
@@ -64,7 +64,7 @@
 </script>
 
 <!-- Babel (for in-browser JSX transform) with fallback -->
-<script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
 <script>
   if (!window.Babel) {
     console.warn("Babel failed to load, attempting fallback");
@@ -103,10 +103,15 @@
     document.head.appendChild(script);
   }
 </script>
-
-  <script type="text/babel">
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-presets="react">
     const { useEffect, useMemo, useRef, useState } = React;
-    const { motion, AnimatePresence } = window.framerMotion;
+    // Robust framer-motion access with safe fallbacks
+    const FM = window.framerMotion || {};
+    const motion = FM.motion || { div: (props) => <div {...props} /> };
+    const AnimatePresence = FM.AnimatePresence || (({ children }) => <>{children}</>);
 
     // ----------------------- Utilities -----------------------
     const routes = [
@@ -154,8 +159,8 @@
       </span>
     );
 
-    const SectionCard = ({ title, subtitle, children, className = "" }) => (
-      <div className={cx("rounded-3xl p-6 md:p-8 glass shadow-soft", className)}>
+    const SectionCard = ({ title, subtitle, children, className = "", ...rest }) => (
+      <div className={cx("rounded-3xl p-6 md:p-8 glass shadow-soft", className)} {...rest}>
         <div className="mb-4">
           <h3 className="text-xl md:text-2xl font-semibold tracking-tight">{title}</h3>
           {subtitle && <p className="mt-1 text-white/70 text-sm md:text-base">{subtitle}</p>}
@@ -516,13 +521,17 @@
               <div>
                 <label className="text-sm text-white/70">Severity</label>
                 <select value={sev} onChange={e=>setSev(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
-                  {["All","Low","Medium","High","Critical"].map(s=><option key={s}>{s}</option>)}
+                  {["All","Low","Medium","High","Critical"].map(s=>
+                    <option key={s}>{s}</option>
+                  )}
                 </select>
               </div>
               <div>
                 <label className="text-sm text-white/70">Region</label>
                 <select value={region} onChange={e=>setRegion(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
-                  {["All","North America","Europe","Asia","South America","Oceania","Africa"].map(s=><option key={s}>{s}</option>)}
+                  {["All","North America","Europe","Asia","South America","Oceania","Africa"].map(s=>
+                    <option key={s}>{s}</option>
+                  )}
                 </select>
               </div>
             </div>
@@ -759,14 +768,15 @@
       console.error("Global error:", { msg, url, line, col, errorObj });
       setError(errorObj?.message || msg);
     };
-    window.onerror = handleError;
-    window.addEventListener("unhandledrejection", (event) => {
+    const handleRejection = (event) => {
       console.error("Unhandled promise rejection:", event.reason);
       setError(event.reason?.message || "Unhandled promise rejection");
-    });
+    };
+    window.onerror = handleError;
+    window.addEventListener("unhandledrejection", handleRejection);
     return () => {
       window.onerror = null;
-      window.removeEventListener("unhandledrejection", handleError);
+      window.removeEventListener("unhandledrejection", handleRejection);
     };
   }, []);
   if (error) {
@@ -782,13 +792,10 @@
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <div style={{ color: "white", padding: "20px" }}>
-    <h1>Test Render</h1>
-    <p>If you see this, React is working.</p>
-  </div>
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
 );
   </script>
-</div>
-<div id="root"></div>
 </body>
 </html>
