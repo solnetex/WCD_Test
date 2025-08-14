@@ -39,73 +39,168 @@
     .reveal { opacity: 1 !important; transform: translateY(0) !important; }
     .linkish { color: #12D6DF; }
     .linkish:hover { text-decoration: underline; }
+
+    /* Ensure app content sits above the background aurora layer */
+    #root { position: relative; z-index: 1; }
+
+    /* Aurora background layer */
+    .aurora { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+
+    /* Aurora blobs */
+    .aurora-blob {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      background-blend-mode: screen;
+      opacity: 0.35;
+      background:
+        radial-gradient(60% 60% at 50% 55%, rgba(124,77,255,0.20), rgba(0,0,0,0) 65%),
+        radial-gradient(55% 55% at 60% 45%, rgba(18,214,223,0.22), rgba(0,0,0,0) 65%),
+        radial-gradient(50% 50% at 40% 60%, rgba(62,255,174,0.16), rgba(0,0,0,0) 65%);
+      filter: blur(var(--blur, 70px)) saturate(1.2);
+      will-change: transform, opacity;
+      transform: translate(0, 0) rotate(var(--rot, 0deg)) scale(var(--sx, 1), var(--sy, 1));
+      animation:
+        auroraFloat var(--dur, 22s) ease-in-out infinite alternate,
+        auroraPulse var(--pDur, 10s) ease-in-out infinite alternate;
+    }
+
+    @keyframes auroraFloat {
+      from {
+        transform: translate(0, 0) rotate(var(--rot, 0deg)) scale(var(--sx, 1), var(--sy, 1));
+      }
+      to {
+        transform: translate(var(--dx, 2vw), var(--dy, 2vh)) rotate(calc(var(--rot, 0deg) + var(--drot, 16deg))) scale(var(--sx, 1), var(--sy, 1));
+      }
+    }
+
+    @keyframes auroraPulse {
+      0% { opacity: 0.22; }
+      100% { opacity: 0.44; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .aurora-blob {
+        animation: auroraPulse 14s ease-in-out infinite alternate;
+      }
+    }
   </style>
 
   <!-- React + ReactDOM (UMD) with fallback -->
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script>
-  if (!window.React) {
-    console.warn("React failed to load, attempting fallback");
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.development.js";
-    script.onerror = () => console.error("React fallback failed to load");
-    document.head.appendChild(script);
-  }
-</script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script>
-  if (!window.ReactDOM) {
-    console.warn("ReactDOM failed to load, attempting fallback");
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.development.js";
-    script.onerror = () => console.error("ReactDOM fallback failed to load");
-    document.head.appendChild(script);
-  }
-</script>
-
-<!-- Babel (for in-browser JSX transform) with fallback -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script>
+    if (!window.React) {
+      console.warn("React failed to load, attempting fallback");
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.development.js";
+      script.onerror = () => console.error("React fallback failed to load");
+      document.head.appendChild(script);
+    }
+  </script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script>
+    if (!window.ReactDOM) {
+      console.warn("ReactDOM failed to load, attempting fallback");
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.development.js";
+      script.onerror = () => console.error("ReactDOM fallback failed to load");
+      document.head.appendChild(script);
+    }
+  </script>
+  <!-- Babel (for in-browser JSX transform) with fallback -->
   <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
-<script>
-  if (!window.Babel) {
-    console.warn("Babel failed to load, attempting fallback");
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js";
-    script.onerror = () => console.error("Babel fallback failed to load");
-    document.head.appendChild(script);
-  }
-</script>
-<!-- anime.js (UMD -> window.anime) with fallback -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-<script>
-  if (!window.anime) {
-    console.warn("Anime.js failed to load, attempting fallback");
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js";
-    script.onerror = () => console.error("Anime.js fallback failed to load");
-    document.head.appendChild(script);
-  }
-</script>
-<!-- Framer Motion (UMD -> window.framerMotion) -->
-<script src="https://cdn.jsdelivr.net/npm/framer-motion@11.11.7/dist/framer-motion.umd.js"></script>
-<script>
-  if (!window.framerMotion) {
-    console.error("Framer Motion failed to load");
-  }
-</script>
-<!-- Lucide (UMD -> window.lucide) with fallback -->
-<script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
-<script>
-  if (!window.lucide) {
-    console.warn("Lucide failed to load, attempting fallback");
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/lucide@0.441.0/dist/umd/lucide.min.js";
-    script.onerror = () => console.error("Lucide fallback failed to load");
-    document.head.appendChild(script);
-  }
-</script>
+  <script>
+    if (!window.Babel) {
+      console.warn("Babel failed to load, attempting fallback");
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js";
+      script.onerror = () => console.error("Babel fallback failed to load");
+      document.head.appendChild(script);
+    }
+  </script>
+  <!-- anime.js (UMD -> window.anime) with fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    if (!window.anime) {
+      console.warn("Anime.js failed to load, attempting fallback");
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js";
+      script.onerror = () => console.error("Anime.js fallback failed to load");
+      document.head.appendChild(script);
+    }
+  </script>
+  <!-- Framer Motion (UMD -> window.framerMotion) -->
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.11.7/dist/framer-motion.umd.js"></script>
+  <script>
+    if (!window.framerMotion) {
+      console.error("Framer Motion failed to load");
+    }
+  </script>
+  <!-- Lucide (UMD -> window.lucide) with fallback -->
+  <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+  <script>
+    if (!window.lucide) {
+      console.warn("Lucide failed to load, attempting fallback");
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/lucide@0.441.0/dist/umd/lucide.min.js";
+      script.onerror = () => console.error("Lucide fallback failed to load");
+      document.head.appendChild(script);
+    }
+  </script>
 </head>
 <body>
+  <div id="aurora" class="aurora"></div>
   <div id="root"></div>
+  <script>
+    (function() {
+      const container = document.getElementById('aurora');
+      if (!container) return;
+
+      const rand = (min, max) => Math.random() * (max - min) + min;
+      const count = Math.floor(rand(6, 9));
+
+      for (let i = 0; i < count; i++) {
+        const blob = document.createElement('span');
+        blob.className = 'aurora-blob';
+
+        const w = rand(34, 68); // vw
+        const h = w * rand(0.38, 0.55); // proportional
+        const left = rand(-10, 82); // vw
+        const top = rand(-8, 85); // vh
+
+        const dx = rand(-18, 22); // vw
+        const dy = rand(-12, 16); // vh
+        const rot = rand(-25, 25); // deg
+        const drot = rand(8, 28); // deg
+        const sx = rand(1.0, 1.9);
+        const sy = rand(0.6, 1.2);
+        const blur = rand(48, 96); // px
+        const dur = rand(16, 34); // s
+        const pDur = rand(7, 12); // s
+
+        blob.style.left = left + 'vw';
+        blob.style.top = top + 'vh';
+        blob.style.width = w + 'vw';
+        blob.style.height = h + 'vw';
+
+        blob.style.setProperty('--dx', dx + 'vw');
+        blob.style.setProperty('--dy', dy + 'vh');
+        blob.style.setProperty('--rot', rot + 'deg');
+        blob.style.setProperty('--drot', drot + 'deg');
+        blob.style.setProperty('--sx', sx.toFixed(2));
+        blob.style.setProperty('--sy', sy.toFixed(2));
+        blob.style.setProperty('--blur', blur + 'px');
+        blob.style.setProperty('--dur', dur + 's');
+        blob.style.setProperty('--pDur', pDur + 's');
+
+        // Slight variation per blob by rotating gradient start
+        const hueShift = rand(-10, 10);
+        blob.style.filter = `blur(${blur}px) saturate(1.2) hue-rotate(${hueShift}deg)`;
+
+        container.appendChild(blob);
+      }
+    })();
+  </script>
   <script type="text/babel" data-presets="react">
     const { useEffect, useMemo, useRef, useState } = React;
     // Robust framer-motion access with safe fallbacks
@@ -1238,11 +1333,11 @@
   return children;
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>
-);
+  ReactDOM.createRoot(document.getElementById("root")).render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
   </script>
 </body>
 </html>
