@@ -119,13 +119,9 @@
       { path: "#mission", label: "Mission", icon: "zap" },
       { path: "#teams", label: "Global Teams", icon: "users" },
       { path: "#join", label: "Join", icon: "play" },
-      { path: "#threats", label: "Threat Feed", icon: "terminal" },
-      { path: "#resources", label: "Resources", icon: "book" },
-      { path: "#press", label: "Press", icon: "newspaper" },
       { path: "#careers", label: "Careers", icon: "briefcase" },
       { path: "#contact", label: "Contact", icon: "mail" },
       { path: "#faq", label: "FAQ", icon: "circle-alert" },
-      { path: "#donate", label: "Donate", icon: "heart" },
     ];
 
     function useHashRoute() {
@@ -139,6 +135,16 @@
     }
 
     const cx = (...c) => c.filter(Boolean).join(" ");
+
+    const continentSlugs = {
+      "North America": "north-america",
+      "Europe": "europe",
+      "Asia": "asia",
+      "South America": "south-america",
+      "Oceania": "oceania",
+      "Africa": "africa",
+    };
+    const slugToContinent = Object.fromEntries(Object.entries(continentSlugs).map(([k, v]) => [v, k]));
 
     const Button = ({ as: As = "button", className = "", children, ...props }) => (
       <As
@@ -351,8 +357,8 @@
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Button as="a" href="#join"><i data-lucide="play" className="w-4 h-4"></i>Join the Mission</Button>
-                  <Button as="a" href="#threats" className="bg-white/0 hover:bg-white/10">
-                    <i data-lucide="terminal" className="w-4 h-4"></i>Live Threat Feed
+                  <Button as="a" href="#teams" className="bg-white/0 hover:bg-white/10">
+                    <i data-lucide="users" className="w-4 h-4"></i>Explore Global Teams
                   </Button>
                 </div>
                 <div className="mt-6 flex items-center gap-5 text-white/60 text-sm">
@@ -382,6 +388,69 @@
               </div>
             </div>
           </section>
+          <div className="mt-6 grid md:grid-cols-3 gap-6">
+            <SectionCard title="What We Do" subtitle="Community-powered protection for everyone.">
+              <ul className="list-disc list-inside text-white/75 space-y-2">
+                <li>Monitor for suspicious activity using behavior and pattern analysis.</li>
+                <li>Respond to local threats and help victims recover quickly.</li>
+                <li>Share intel, tools, and playbooks across regions to stay ahead.</li>
+              </ul>
+            </SectionCard>
+            <SectionCard title="How We Operate" subtitle="Simple structure, strong collaboration.">
+              <ul className="list-disc list-inside text-white/75 space-y-2">
+                <li>Teams organized by large regions per continent.</li>
+                <li>Regional Coordinators lead teams and escalate major issues.</li>
+                <li>Continent Directors align regions with global strategy.</li>
+              </ul>
+            </SectionCard>
+            <SectionCard title="Who Can Join" subtitle="Experts and enthusiasts welcome.">
+              <ul className="list-disc list-inside text-white/75 space-y-2">
+                <li>Preferred 2–4 hours/day, but flexible for life and work.</li>
+                <li>Ethical, collaborative, and impact-driven contributors.</li>
+                <li>Opportunities for learning, mentorship, and leadership.</li>
+              </ul>
+            </SectionCard>
+          </div>
+          <div className="mt-6 grid md:grid-cols-2 gap-6">
+            <SectionCard title="Our Principles" subtitle="Free protection • Ethical defense • Open collaboration">
+              <div className="text-white/75 space-y-2">
+                <p>WCD exists to protect people and companies at no cost. We prioritize privacy, transparency, and responsible, defensive-only actions.</p>
+                <p>We share knowledge across regions and continents so local teams benefit from global insight.</p>
+              </div>
+            </SectionCard>
+            <SectionCard title="Ways We Help" subtitle="Prevention, response, and education—together.">
+              <div className="grid grid-cols-2 gap-3 text-white/75">
+                <div className="rounded-xl ring-card p-3 bg-white/5">
+                  <div className="flex items-center gap-2 mb-1"><i data-lucide="radar" className="w-4 h-4"></i><span className="text-sm">Proactive Monitoring</span></div>
+                  <p className="text-xs text-white/60">Detect anomalies early with community AI.</p>
+                </div>
+                <div className="rounded-xl ring-card p-3 bg-white/5">
+                  <div className="flex items-center gap-2 mb-1"><i data-lucide="life-buoy" className="w-4 h-4"></i><span className="text-sm">Incident Response</span></div>
+                  <p className="text-xs text-white/60">Coordinate fast, ethical mitigation.</p>
+                </div>
+                <div className="rounded-xl ring-card p-3 bg-white/5">
+                  <div className="flex items-center gap-2 mb-1"><i data-lucide="share-2" className="w-4 h-4"></i><span className="text-sm">Threat Intel</span></div>
+                  <p className="text-xs text-white/60">Share patterns, IOCs, and tools.</p>
+                </div>
+                <div className="rounded-xl ring-card p-3 bg-white/5">
+                  <div className="flex items-center gap-2 mb-1"><i data-lucide="book-open" className="w-4 h-4"></i><span className="text-sm">Training</span></div>
+                  <p className="text-xs text-white/60">Help members grow skills and confidence.</p>
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+          <div className="mt-6 rounded-3xl glass p-6 md:p-8 shadow-soft">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h3 className="text-xl md:text-2xl font-semibold tracking-tight">Ready to help defend your region?</h3>
+                <p className="text-white/70 text-sm md:text-base mt-1">Browse available roles by continent, then submit a quick application.</p>
+              </div>
+              <div className="flex gap-3">
+                <Button as="a" href="#teams"><i data-lucide="globe" className="w-4 h-4"></i>View Global Teams</Button>
+                <Button as="a" href="#join" className="bg-white/0 hover:bg-white/10"><i data-lucide="user-plus" className="w-4 h-4"></i>General Join</Button>
+              </div>
+            </div>
+          </div>
         </PageContainer>
       );
     }
@@ -426,13 +495,32 @@
       ];
       return (
         <PageContainer>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <SectionCard title="How WCD Teams Work" subtitle="Simple, scalable leadership with open collaboration.">
+            <div className="text-white/75 space-y-2">
+              <p>WCD organizes teams by large regions, with 3–10 regions per continent depending on size. Members are cybersecurity experts or enthusiasts volunteering flexibly—ideally 2–4 hours per day.</p>
+              <p>Each region is led by a Coordinator who organizes the team and reports to Continent Directors (1–3 per continent). Continent Directors oversee all regional work and align strategy with the COO and CEO. Members monitor systems using AI-driven pattern detection, respond to local threats, and escalate serious issues as needed.</p>
+              <p>Knowledge about new attack patterns and tools is shared across regions and continents to enable fast, effective collaboration. We operate on principles of free protection, ethical defensive actions, and flexible participation.</p>
+            </div>
+          </SectionCard>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             {regions.map((r, i) => (
-              <SectionCard key={r.name} title={r.name} subtitle={`Lead: ${r.lead}`} className="fade-in" style={{ transitionDelay: `${i*60}ms` }}>
+              <SectionCard
+                key={r.name}
+                title={r.name}
+                subtitle={`Lead: ${r.lead}`}
+                className="fade-in cursor-pointer"
+                style={{ transitionDelay: `${i*60}ms` }}
+                onClick={() => { window.location.hash = `#continent/${continentSlugs[r.name]}`; }}
+                role="button"
+                tabIndex={0}
+              >
                 <div className="text-white/75">
                   <p className="mb-2"><b>Members:</b> {r.members}</p>
                   <p className="mb-2"><b>Ops Channels:</b> {r.channels}</p>
-                  <Button as="a" href="#join"><i data-lucide="plus" className="w-4 h-4"></i>Join this region</Button>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button as="a" href={`#continent/${continentSlugs[r.name]}`}><i data-lucide="list" className="w-4 h-4"></i>View roles</Button>
+                    <Button as="a" href={`#continent/${continentSlugs[r.name]}`} className="bg-white/0 hover:bg-white/10"><i data-lucide="plus" className="w-4 h-4"></i>Join this region</Button>
+                  </div>
                 </div>
               </SectionCard>
             ))}
@@ -442,41 +530,85 @@
     }
 
     function Join() {
-      const [sent, setSent] = useState(false);
-      const onSubmit = (e) => {
-        e.preventDefault();
-        setSent(true);
-      };
+      const roles = [
+        "Continent Director",
+        "Team Lead / Regional Coordinator",
+        "Threat Analyst",
+        "Malware Researcher",
+        "Penetration Tester (Ethical Hacker)",
+        "Incident Responder",
+        "Network Security Specialist",
+        "Web Security Specialist",
+        "Cloud Security Specialist",
+        "Vulnerability Assessor",
+        "AI Security Engineer",
+        "Forensics Analyst",
+        "Cyber Intelligence Analyst",
+        "SOC (Security Operations Center) Operator",
+        "Security Auditor",
+        "Risk Assessment Specialist",
+        "Cybersecurity Trainer / Educator",
+        "Exploit Researcher",
+        "Threat Hunter",
+        "Security Tool Developer",
+      ];
       return (
         <PageContainer>
           <div className="grid md:grid-cols-2 gap-6">
-            <SectionCard title="Join WCD" subtitle="We welcome skilled defenders and learners alike.">
-              <form onSubmit={onSubmit} className="space-y-4">
-                <div>
-                  <label className="text-sm text-white/70">Name</label>
-                  <input className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+            <SectionCard title="Join WCD" subtitle="General interest — we’ll match you to a region.">
+              <form action="https://formspree.io/f/REPLACE_WITH_FORMSPREE_ID" method="POST" className="space-y-4">
+                <input type="hidden" name="source" value="general-join" />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-white/70">Full Name</label>
+                    <input name="name" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Email</label>
+                    <input type="email" name="email" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Continent</label>
+                    <select name="continent" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                      {Object.keys(continentSlugs).map(c => <option key={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Preferred Role</label>
+                    <select name="preferred_role" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                      {roles.map(r => <option key={r}>{r}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-white/70">Experience Level</label>
+                    <select name="experience" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                      {["Beginner","Intermediate","Advanced","Expert"].map(x => <option key={x}>{x}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Availability (hours/week)</label>
+                    <select name="availability" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                      {["<2","2–4","5–10","10+"].map(x => <option key={x}>{x}</option>)}
+                    </select>
+                  </div>
                 </div>
                 <div>
-                  <label className="text-sm text-white/70">Email</label>
-                  <input type="email" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                  <label className="text-sm text-white/70">Areas of Expertise / Interest</label>
+                  <textarea name="skills" rows="4" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="Threat intel, IR, SOC, forensics, malware, web/cloud security, etc."></textarea>
                 </div>
-                <div>
-                  <label className="text-sm text-white/70">Region</label>
-                  <select className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
-                    <option>North America</option>
-                    <option>Europe</option>
-                    <option>Asia</option>
-                    <option>South America</option>
-                    <option>Oceania</option>
-                    <option>Africa</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-sm text-white/70">Skills / Interest</label>
-                  <textarea rows="4" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="Blue team, threat intel, forensics, malware analysis, incident response..." />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-white/70">LinkedIn or Website (optional)</label>
+                    <input name="profile" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="https://..." />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Country (optional)</label>
+                    <input name="country" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
                 </div>
                 <Button type="submit"><i data-lucide="rocket" className="w-4 h-4"></i>Submit</Button>
-                {sent && <p className="text-sm text-green-300">Thanks! We’ll be in touch.</p>}
               </form>
             </SectionCard>
             <SectionCard title="Why Join?" subtitle="Make real impact. Learn with peers.">
@@ -698,6 +830,171 @@
       );
     }
 
+    function ContinentPage({ slug }) {
+      const name = slugToContinent[slug] || "Region";
+      const roles = [
+        "Continent Director",
+        "Team Lead / Regional Coordinator",
+        "Threat Analyst",
+        "Malware Researcher",
+        "Penetration Tester (Ethical Hacker)",
+        "Incident Responder",
+        "Network Security Specialist",
+        "Web Security Specialist",
+        "Cloud Security Specialist",
+        "Vulnerability Assessor",
+        "AI Security Engineer",
+        "Forensics Analyst",
+        "Cyber Intelligence Analyst",
+        "SOC (Security Operations Center) Operator",
+        "Security Auditor",
+        "Risk Assessment Specialist",
+        "Cybersecurity Trainer / Educator",
+        "Exploit Researcher",
+        "Threat Hunter",
+        "Security Tool Developer",
+      ];
+      return (
+        <PageContainer>
+          <div className="rounded-3xl glass p-6 md:p-8 shadow-soft mb-6">
+            <h3 className="text-2xl font-semibold">{name}</h3>
+            <p className="text-white/75 mt-2">Explore open roles for {name}. Teams welcome a wide range of skill levels and time commitments. Choose a role to learn more and apply.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {roles.map((role, i) => (
+              <SectionCard key={role} title={role} subtitle="Volunteer • Remote" className="fade-in" style={{ transitionDelay: `${i*50}ms` }}>
+                <p className="text-white/70 text-sm">Help defend organizations and communities in {name}. Collaborate with peers, share knowledge, and improve your craft.</p>
+              </SectionCard>
+            ))}
+          </div>
+          <div className="mt-6">
+            <Button as="a" href={`#apply/${slug}`}><i data-lucide="user-plus" className="w-4 h-4"></i>Join this region</Button>
+          </div>
+        </PageContainer>
+      );
+    }
+
+    function ApplyPage({ slug }) {
+      const name = slugToContinent[slug] || "Region";
+      const roles = [
+        "Continent Director",
+        "Team Lead / Regional Coordinator",
+        "Threat Analyst",
+        "Malware Researcher",
+        "Penetration Tester (Ethical Hacker)",
+        "Incident Responder",
+        "Network Security Specialist",
+        "Web Security Specialist",
+        "Cloud Security Specialist",
+        "Vulnerability Assessor",
+        "AI Security Engineer",
+        "Forensics Analyst",
+        "Cyber Intelligence Analyst",
+        "SOC (Security Operations Center) Operator",
+        "Security Auditor",
+        "Risk Assessment Specialist",
+        "Cybersecurity Trainer / Educator",
+        "Exploit Researcher",
+        "Threat Hunter",
+        "Security Tool Developer",
+      ];
+      return (
+        <PageContainer>
+          <div className="grid md:grid-cols-2 gap-6">
+            <SectionCard title={`Apply to ${name}`} subtitle="We review applications regularly and onboard in waves.">
+              <form action="https://formspree.io/f/REPLACE_WITH_FORMSPREE_ID" method="POST" className="space-y-4">
+                <input type="hidden" name="continent" value={name} />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-white/70">Full Name</label>
+                    <input name="name" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Email</label>
+                    <input type="email" name="email" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Country</label>
+                    <input name="country" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Time Zone</label>
+                    <input name="timezone" placeholder="e.g., UTC-5, CET" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Experience Level</label>
+                    <select name="experience" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                      { ["Beginner","Intermediate","Advanced","Expert"].map(x => <option key={x}>{x}</option>) }
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Preferred Role</label>
+                    <select name="preferred_role" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required>
+                      { roles.map(r => <option key={r}>{r}</option>) }
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Availability (hours/week)</label>
+                    <select name="availability" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                      { ["<2","2–4","5–10","10+"].map(x => <option key={x}>{x}</option>) }
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Languages</label>
+                    <input name="languages" placeholder="English, Spanish, ..." className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-white/70">Areas of Expertise / Interest</label>
+                  <textarea name="skills" rows="4" placeholder="Threat intel, IR, SOC, forensics, malware, web/cloud security, etc." className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none"></textarea>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-white/70">Tools you use</label>
+                    <input name="tools" placeholder="ELK, Splunk, Wireshark, Burp Suite, Volatility, YARA, etc." className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">Certifications (optional)</label>
+                    <input name="certs" placeholder="SEC+, CEH, OSCP, GCIA, etc." className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-white/70">LinkedIn (optional)</label>
+                    <input name="linkedin" placeholder="https://linkedin.com/in/..." className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-sm text-white/70">GitHub or Portfolio (optional)</label>
+                    <input name="github" placeholder="https://github.com/..." className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-white/70">Anything else we should know?</label>
+                  <textarea name="notes" rows="3" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none"></textarea>
+                </div>
+                <div className="space-y-2">
+                  <label className="inline-flex items-center gap-2 text-sm text-white/80">
+                    <input type="checkbox" name="code_of_conduct" required className="rounded" /> I agree to contribute ethically and respect WCD’s code of conduct.
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm text-white/80">
+                    <input type="checkbox" name="defensive_only" required className="rounded" /> I affirm my work will be defensive-only and lawful.
+                  </label>
+                </div>
+                <Button type="submit"><i data-lucide="send" className="w-4 h-4"></i>Submit Application</Button>
+              </form>
+            </SectionCard>
+            <SectionCard title="What to Expect" subtitle="After you apply">
+              <ul className="list-disc list-inside text-white/75 space-y-2">
+                <li>We review applications on a rolling basis per region.</li>
+                <li>Accepted members receive onboarding, channels, and playbooks.</li>
+                <li>Start monitoring, drills, and collaboration with your team.</li>
+              </ul>
+            </SectionCard>
+          </div>
+        </PageContainer>
+      );
+    }
+
     // ----------------------- Router -----------------------
     function Router({ route }) {
       return (
@@ -713,13 +1010,11 @@
             {route === "#mission" && <Mission />}
             {route === "#teams" && <Teams />}
             {route === "#join" && <Join />}
-            {route === "#threats" && <Threats />}
-            {route === "#resources" && <Resources />}
-            {route === "#press" && <Press />}
             {route === "#careers" && <Careers />}
             {route === "#contact" && <Contact />}
             {route === "#faq" && <FAQ />}
-            {route === "#donate" && <Donate />}
+            {route.startsWith("#continent/") && <ContinentPage slug={route.slice("#continent/".length)} />}
+            {route.startsWith("#apply/") && <ApplyPage slug={route.slice("#apply/".length)} />}
           </motion.div>
         </AnimatePresence>
       );
@@ -749,11 +1044,11 @@
             <div className="rounded-2xl glass p-4 flex flex-col md:flex-row items-center justify-between gap-3">
               <p className="text-white/60 text-sm">© {new Date().getFullYear()} World Cyber Defense — nonprofit, global.</p>
               <div className="flex items-center gap-3 text-white/70">
-                <a href="#press" className="hover:text-white">Press</a>
-                <span className="opacity-50">•</span>
-                <a href="#resources" className="hover:text-white">Resources</a>
+                <a href="#teams" className="hover:text-white">Teams</a>
                 <span className="opacity-50">•</span>
                 <a href="#contact" className="hover:text-white">Contact</a>
+                <span className="opacity-50">•</span>
+                <a href="#faq" className="hover:text-white">FAQ</a>
               </div>
             </div>
           </footer>
