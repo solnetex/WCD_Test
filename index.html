@@ -39,27 +39,6 @@
     .reveal { opacity: 1 !important; transform: translateY(0) !important; }
     .linkish { color: #12D6DF; }
     .linkish:hover { text-decoration: underline; }
-    #root { position: relative; z-index: 1; }
-    #bg-grid {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      display: grid;
-      pointer-events: none;
-      gap: 1px;
-      background: #050a0f; /* gaps blend with page background */
-      contain: layout paint size style;
-    }
-    #bg-grid .bg-tile {
-      width: var(--tile-size, 22px);
-      height: var(--tile-size, 22px);
-      will-change: filter;
-      backface-visibility: hidden;
-      transform: translateZ(0);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #bg-grid .bg-tile { transition: none !important; }
-    }
   </style>
 
   <!-- React + ReactDOM (UMD) with fallback -->
@@ -126,7 +105,6 @@
 </script>
 </head>
 <body>
-  <div id="bg-grid" aria-hidden="true"></div>
   <div id="root"></div>
   <script type="text/babel" data-presets="react">
     const { useEffect, useMemo, useRef, useState } = React;
@@ -1215,134 +1193,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <App />
   </ErrorBoundary>
 );
-  </script>
-  <script>
-  (function() {
-    const container = document.getElementById('bg-grid');
-    if (!container) return;
-
-    const TILE_SIZE = 22; // px (uniform size)
-    const GAP = 1; // px
-    const WAVE_DURATION_MS = 1800;
-    const DELAY_PER_STEP_MS = 26; // spacing between neighbor tiles in ms
-    const MIN_INTERVAL_MS = 7000; // waves not too frequent
-    const MAX_INTERVAL_MS = 12000; // but not too far apart
-
-    const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Use the body's computed background as base
-    const baseColor = getComputedStyle(document.body).backgroundColor || '#050a0f';
-    container.style.setProperty('--tile-size', TILE_SIZE + 'px');
-
-    function computeGridDimensions() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const cols = Math.ceil((width + GAP) / (TILE_SIZE + GAP));
-      const rows = Math.ceil((height + GAP) / (TILE_SIZE + GAP));
-      return { cols, rows, count: cols * rows };
-    }
-
-    function buildGrid() {
-      const { cols, rows, count } = computeGridDimensions();
-      if (Number(container.dataset.cols) === cols && Number(container.dataset.rows) === rows) {
-        return;
-      }
-      container.dataset.cols = String(cols);
-      container.dataset.rows = String(rows);
-
-      container.style.gridTemplateColumns = `repeat(${cols}, ${TILE_SIZE}px)`;
-      container.style.gridAutoRows = `${TILE_SIZE}px`;
-
-      const current = container.children.length;
-      if (current !== count) {
-        container.innerHTML = '';
-        const frag = document.createDocumentFragment();
-        for (let i = 0; i < count; i++) {
-          const tile = document.createElement('div');
-          tile.className = 'bg-tile';
-          tile.style.backgroundColor = baseColor;
-          tile.style.filter = 'brightness(1)';
-          frag.appendChild(tile);
-        }
-        container.appendChild(frag);
-      }
-    }
-
-    function runWave() {
-      if (!window.anime || prefersReduced()) return;
-      const cols = Number(container.dataset.cols || 0);
-      const rows = Number(container.dataset.rows || 0);
-      if (!cols || !rows) return;
-
-      const total = cols * rows;
-      if (!total) return;
-
-      const mode = Math.random();
-      let fromX, fromY;
-      if (mode < 0.33) {
-        fromX = (cols - 1) / 2;
-        fromY = (rows - 1) / 2;
-      } else if (mode < 0.66) {
-        fromX = Math.floor(Math.random() * cols);
-        fromY = Math.floor(Math.random() * rows);
-      } else {
-        const edge = Math.floor(Math.random() * 4);
-        if (edge === 0) { fromX = 0; fromY = Math.floor(Math.random() * rows); }
-        else if (edge === 1) { fromX = cols - 1; fromY = Math.floor(Math.random() * rows); }
-        else if (edge === 2) { fromX = Math.floor(Math.random() * cols); fromY = 0; }
-        else { fromX = Math.floor(Math.random() * cols); fromY = rows - 1; }
-      }
-
-      const baseAmp = 0.02 + Math.random() * 0.02; // 2% - 4% brightness
-      const jitter = 0.012; // per-tile slight randomness
-
-      anime({
-        targets: container.children,
-        filter: [
-          'brightness(1)',
-          function(_, i) {
-            const amp = baseAmp + (Math.random() * jitter - jitter / 2);
-            const value = Math.max(1, 1 + amp);
-            return `brightness(${value.toFixed(3)})`;
-          }
-        ],
-        delay: function(_, i) {
-          const x = i % cols;
-          const y = Math.floor(i / cols);
-          const dx = x - fromX;
-          const dy = y - fromY;
-          const distance = Math.hypot(dx, dy);
-          return distance * DELAY_PER_STEP_MS;
-        },
-        duration: WAVE_DURATION_MS,
-        easing: 'easeInOutSine',
-        direction: 'alternate',
-        autoplay: true
-      });
-    }
-
-    function scheduleNextWave() {
-      if (prefersReduced()) return;
-      const next = Math.round(MIN_INTERVAL_MS + Math.random() * (MAX_INTERVAL_MS - MIN_INTERVAL_MS));
-      setTimeout(() => {
-        runWave();
-        scheduleNextWave();
-      }, next);
-    }
-
-    let resizeRaf = 0;
-    function onResize() {
-      if (resizeRaf) cancelAnimationFrame(resizeRaf);
-      resizeRaf = requestAnimationFrame(buildGrid);
-    }
-
-    buildGrid();
-    window.addEventListener('resize', onResize, { passive: true });
-
-    // initial subtle wave after mount
-    setTimeout(() => runWave(), 1200);
-    scheduleNextWave();
-  })();
   </script>
 </body>
 </html>
