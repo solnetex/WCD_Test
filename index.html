@@ -349,7 +349,7 @@
                   <Pill>Open Collaboration</Pill>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
-                  Protecting the internet—<span className="text-wcd-accent">for everyone</span>.
+                  Security<span className="text-wcd-accent">     for everyone</span>.
                 </h1>
                 <p className="mt-3 text-white/75">
                   World Cyber Defense (WCD) mobilizes volunteer experts across the globe to detect, deter,
@@ -363,8 +363,8 @@
                 </div>
                 <div className="mt-6 flex items-center gap-5 text-white/60 text-sm">
                   <span className="inline-flex items-center gap-2"><i data-lucide="globe" className="w-4 h-4"></i> 60+ countries</span>
-                  <span className="inline-flex items-center gap-2"><i data-lucide="users" className="w-4 h-4"></i> 5k+ members</span>
-                  <span className="inline-flex items-center gap-2"><i data-lucide="zap" className="w-4 h-4"></i> preemptive AI</span>
+                  <span className="inline-flex items-center gap-2"><i data-lucide="users" className="w-4 h-4"></i> Volunteer Driven</span>
+                  <span className="inline-flex items-center gap-2"><i data-lucide="zap" className="w-4 h-4"></i> Accept any skill level</span>
                 </div>
               </div>
               <div className="relative">
@@ -377,7 +377,7 @@
                         <span className="text-sm font-medium">{t}</span>
                       </div>
                       <p className="text-xs text-white/60">
-                        {i===0 && "Continuous behavior-based detection powered by community AI."}
+                        {i===0 && "Continuous behavior-based detection powered by our community."}
                         {i===1 && "Coordinated, ethical, and transparent response playbooks."}
                         {i===2 && "Open, curated intel feeds and reports for the public good."}
                         {i===3 && "Free training and resources for defenders at every level."}
@@ -486,12 +486,12 @@
 
     function Teams() {
       const regions = [
-        { name: "North America", members: "1,800+", lead: "Alex R.", channels: 42 },
-        { name: "Europe", members: "1,300+", lead: "Dana K.", channels: 39 },
-        { name: "Asia", members: "900+", lead: "Kenji M.", channels: 31 },
-        { name: "South America", members: "450+", lead: "María L.", channels: 21 },
-        { name: "Oceania", members: "220+", lead: "Sam P.", channels: 12 },
-        { name: "Africa", members: "360+", lead: "Chinedu O.", channels: 18 },
+        { name: "North America", members: "3", lead: "none", channels: 1 },
+        { name: "Europe", members: "1", lead: "none", channels: 1 },
+        { name: "Asia", members: "4", lead: "none", channels: 1 },
+        { name: "South America", members: "0", lead: "none", channels: 1 },
+        { name: "Oceania", members: "2", lead: "none", channels: 1 },
+        { name: "Africa", members: "0", lead: "none", channels: 1 },
       ];
       return (
         <PageContainer>
@@ -551,12 +551,13 @@
         "Exploit Researcher",
         "Threat Hunter",
         "Security Tool Developer",
+        "Other (please specify)",
       ];
       return (
         <PageContainer>
           <div className="grid md:grid-cols-2 gap-6">
             <SectionCard title="Join WCD" subtitle="General interest — we’ll match you to a region.">
-              <form action="https://formspree.io/f/REPLACE_WITH_FORMSPREE_ID" method="POST" className="space-y-4">
+              <form action="https://formspree.io/f/mrbldbly" method="POST" className="space-y-4">
                 <input type="hidden" name="source" value="general-join" />
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -569,13 +570,57 @@
                   </div>
                   <div>
                     <label className="text-sm text-white/70">Continent</label>
-                    <select name="continent" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                    <select
+  name="continent"
+  style={{
+    appearance: "none",
+    WebkitAppearance: "none",
+    MozAppearance: "none",
+    backgroundColor: "#2b2f34",
+    color: "#white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.75rem",
+    border: "1px solid #414548",
+    width: "100%",
+    fontSize: "0.95rem",
+    outline: "none",
+    cursor: "pointer",
+    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='white' d='M5 7l5 5 5-5H5z'/%3E%3C/svg%3E\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 0.75rem center",
+    backgroundSize: "1rem",
+    transition: "all 0.2s ease-in-out"
+  }}
+>
+
                       {Object.keys(continentSlugs).map(c => <option key={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-sm text-white/70">Preferred Role</label>
-                    <select name="preferred_role" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                    <select
+  name="preferred_role"
+  style={{
+     appearance: "none",
+    WebkitAppearance: "none",
+    MozAppearance: "none",
+    backgroundColor: "#2b2f34",
+    color: "#white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.75rem",
+    border: "1px solid #414548",
+    width: "100%",
+    fontSize: "0.95rem",
+    outline: "none",
+    cursor: "pointer",
+    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='white' d='M5 7l5 5 5-5H5z'/%3E%3C/svg%3E\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 0.75rem center",
+    backgroundSize: "1rem",
+    transition: "all 0.2s ease-in-out"
+  }}
+>
+
                       {roles.map(r => <option key={r}>{r}</option>)}
                     </select>
                   </div>
@@ -583,29 +628,70 @@
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm text-white/70">Experience Level</label>
-                    <select name="experience" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+                    <select
+  name="preferred_role"
+  style={{
+    appearance: "none",
+    WebkitAppearance: "none",
+    MozAppearance: "none",
+    backgroundColor: "#2b2f34",
+    color: "#white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.75rem",
+    border: "1px solid #414548",
+    width: "100%",
+    fontSize: "0.95rem",
+    outline: "none",
+    cursor: "pointer",
+    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='white' d='M5 7l5 5 5-5H5z'/%3E%3C/svg%3E\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 0.75rem center",
+    backgroundSize: "1rem",
+    transition: "all 0.2s ease-in-out"
+  }}>
                       {["Beginner","Intermediate","Advanced","Expert"].map(x => <option key={x}>{x}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-sm text-white/70">Availability (hours/week)</label>
-                    <select name="availability" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none">
+<select
+  name="availability"
+  style={{
+    appearance: "none",
+    WebkitAppearance: "none",
+    MozAppearance: "none",
+    backgroundColor: "#2b2f34",
+    color: "#white",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.75rem",
+    border: "1px solid #414548",
+    width: "100%",
+    fontSize: "0.95rem",
+    outline: "none",
+    cursor: "pointer",
+    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='white' d='M5 7l5 5 5-5H5z'/%3E%3C/svg%3E\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 0.75rem center",
+    backgroundSize: "1rem",
+    transition: "all 0.2s ease-in-out"
+  }}
+>
                       {["<2","2–4","5–10","10+"].map(x => <option key={x}>{x}</option>)}
                     </select>
                   </div>
                 </div>
                 <div>
                   <label className="text-sm text-white/70">Areas of Expertise / Interest</label>
-                  <textarea name="skills" rows="4" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="Threat intel, IR, SOC, forensics, malware, web/cloud security, etc."></textarea>
+                  <textarea name="skills" rows="4" required className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="Threat intel, IR, SOC, forensics, malware, web/cloud security, etc."></textarea>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-white/70">LinkedIn or Website (optional)</label>
-                    <input name="profile" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="https://..." />
+                    <label className="text-sm text-white/70">LinkedIn or Portfolio (Required)</label>
+                    <input name="profile" required className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" placeholder="https://..." />
                   </div>
                   <div>
-                    <label className="text-sm text-white/70">Country (optional)</label>
-                    <input name="country" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
+                    <label className="text-sm text-white/70">Country (Required)</label>
+                    <input name="country" required className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" />
                   </div>
                 </div>
                 <Button type="submit"><i data-lucide="rocket" className="w-4 h-4"></i>Submit</Button>
@@ -761,32 +847,46 @@
         <PageContainer>
           <div className="grid md:grid-cols-2 gap-6">
             <SectionCard title="Contact WCD" subtitle="We try to respond within 2–3 days.">
-              <form onSubmit={submit} className="space-y-4">
-                <div>
-                  <label className="text-sm text-white/70">Your Email</label>
-                  <input type="email" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
-                </div>
-                <div>
-                  <label className="text-sm text-white/70">Message</label>
-                  <textarea rows="5" className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none" required />
-                </div>
-                <Button type="submit"><i data-lucide="send" className="w-4 h-4"></i>Send</Button>
-                {ok && <p className="text-sm text-green-300">Message sent!</p>}
-              </form>
-            </SectionCard>
+      <form action="https://formspree.io/f/mzzvwzjb" method="POST" className="space-y-4">
+        <input type="hidden" name="source" value="contact-wcd" />
+        <div>
+          <label className="text-sm text-white/70">Your Email</label>
+          <input
+            type="email"
+            name="email"
+            className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-sm text-white/70">Message</label>
+          <textarea
+            name="message"
+            rows="5"
+            className="w-full mt-1 px-3 py-2 rounded-xl bg-white/10 border border-white/10 outline-none"
+            required
+          />
+        </div>
+        <Button type="submit">
+          <i data-lucide="send" className="w-4 h-4"></i>Send
+        </Button>
+        {ok && <p className="text-sm text-green-300">Message sent!</p>}
+      </form>
+    </SectionCard>
             <SectionCard title="Other Channels" subtitle="Connect with the community.">
-              <div className="space-y-3 text-white/75">
-                <div className="flex items-center gap-3">
-                  <i data-lucide="github" className="w-5 h-5"></i> GitHub: <a className="linkish" href="#">/wcd</a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <i data-lucide="twitter" className="w-5 h-5"></i> X: <a className="linkish" href="#">@worldcyberdef</a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <i data-lucide="mail" className="w-5 h-5"></i> Press: <a className="linkish" href="#">press@wcd.org</a>
-                </div>
-              </div>
-            </SectionCard>
+  <div className="space-y-3 text-white/75">
+    <div className="flex items-center gap-3">
+      <i data-lucide="instagram" className="w-5 h-5"></i> <a className="linkish" href="https://www.instagram.com/wcdinternational" target="_blank">/wcdinternational</a>
+    </div>
+    <div className="flex items-center gap-3">
+      <i data-lucide="x" className="w-5 h-5"></i> <a className="linkish" href="https://x.com/WCD_Global" target="_blank">@WCD_Global</a>
+    </div>
+    <div className="flex items-center gap-3">
+      <i data-lucide="globe" className="w-5 h-5"></i> Parent Company<a className="linkish" href="https://solnetex.com" target="_blank">Solnetex.com</a>
+    </div>
+  </div>
+</SectionCard>
+
           </div>
         </PageContainer>
       );
@@ -853,12 +953,13 @@
         "Exploit Researcher",
         "Threat Hunter",
         "Security Tool Developer",
+        "Other (please specify)",
       ];
       return (
         <PageContainer>
           <div className="rounded-3xl glass p-6 md:p-8 shadow-soft mb-6">
             <h3 className="text-2xl font-semibold">{name}</h3>
-            <p className="text-white/75 mt-2">Explore open roles for {name}. Teams welcome a wide range of skill levels and time commitments. Choose a role to learn more and apply.</p>
+            <p className="text-white/75 mt-2">Explore open roles for {name}. Teams welcome a wide range of skill levels and time commitments. Choose your role and apply. Unlimited members per team.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {roles.map((role, i) => (
@@ -897,6 +998,7 @@
         "Exploit Researcher",
         "Threat Hunter",
         "Security Tool Developer",
+        "Other (please specify)",
       ];
       return (
         <PageContainer>
