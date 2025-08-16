@@ -40,6 +40,11 @@
     .linkish { color: #12D6DF; }
     .linkish:hover { text-decoration: underline; }
 
+    /* Scroll progress bar + micro-interaction helpers */
+    .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: linear-gradient(90deg, #12D6DF, #7C4DFF); z-index: 60; transform-origin: 0 0; }
+    .tilt-card { transform-style: preserve-3d; will-change: transform; }
+    .anim-underline { width: 0; }
+
     /* Ensure app content sits above the background aurora layer */
     #root { position: relative; z-index: 1; }
 
@@ -83,6 +88,7 @@
       .aurora-blob {
         animation: auroraPulse 14s ease-in-out infinite alternate;
       }
+      .scroll-progress { display: none; }
     }
   </style>
 
@@ -149,6 +155,7 @@
   </script>
 </head>
 <body>
+  <div id="scroll-progress" class="scroll-progress"></div>
   <div id="aurora" class="aurora"></div>
   <div id="root"></div>
   <script>
@@ -231,6 +238,24 @@
 
     const cx = (...c) => c.filter(Boolean).join(" ");
 
+    function useScrollProgress() {
+      useEffect(() => {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const bar = document.getElementById('scroll-progress');
+        if (!bar) return;
+        const onScroll = () => {
+          const h = document.documentElement;
+          const scrolled = h.scrollTop;
+          const max = h.scrollHeight - h.clientHeight;
+          const p = max ? (scrolled / max) : 0;
+          bar.style.width = (p * 100).toFixed(2) + '%';
+        };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+      }, []);
+    }
+
     const continentSlugs = {
       "North America": "north-america",
       "Europe": "europe",
@@ -261,10 +286,11 @@
     );
 
     const SectionCard = ({ title, subtitle, children, className = "", ...rest }) => (
-      <div className={cx("rounded-3xl p-6 md:p-8 glass shadow-soft", className)} {...rest}>
+      <div className={cx("rounded-3xl p-6 md:p-8 glass shadow-soft anim-card tilt-card", className)} {...rest}>
         <div className="mb-4">
           <h3 className="text-xl md:text-2xl font-semibold tracking-tight">{title}</h3>
           {subtitle && <p className="mt-1 text-white/70 text-sm md:text-base">{subtitle}</p>}
+          <div className="mt-2 h-[2px] bg-gradient-to-r from-wcd-accent to-wcd-accent2/80 opacity-80 anim-underline"></div>
         </div>
         {children}
       </div>
@@ -272,31 +298,150 @@
 
     function useRevealOnScroll() {
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll(".fade-in"));
-    if (!els.length) {
-      console.warn("No .fade-in elements found for animation");
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const animeLib = window.anime;
+
+    const immediateReveal = () => {
+      document.querySelectorAll('.fade-in, .anim-card').forEach(el => el.classList.add('reveal'));
+      document.querySelectorAll('.anim-underline').forEach(el => { el.style.width = '72px'; });
+      document.querySelectorAll('[data-count-to]').forEach(el => { el.textContent = el.getAttribute('data-count-to') || '0'; });
+    };
+
+    if (prefersReduced || !animeLib) {
+      if (!animeLib) console.warn('Anime.js not loaded, using non-animated reveal');
+      immediateReveal();
+      return;
     }
+
     const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          e.target.classList.add("reveal");
-          if (!window.anime) {
-            console.warn("Anime.js not loaded, skipping fade-in animation");
-          } else {
-            anime({
-              targets: e.target,
-              translateY: [12, 0],
-              opacity: [0, 1],
-              duration: 600,
-              easing: "easeOutCubic"
-            });
-          }
-          io.unobserve(e.target);
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target;
+
+        if (el.classList.contains('anim-card')) {
+          anime({
+            targets: el,
+            translateY: [16, 0],
+            opacity: [0, 1],
+            scale: [0.98, 1],
+            duration: 650,
+            easing: 'easeOutCubic'
+          });
+        } else if (el.classList.contains('fade-in')) {
+          anime({
+            targets: el,
+            translateY: [12, 0],
+            opacity: [0, 1],
+            duration: 600,
+            easing: 'easeOutCubic'
+          });
         }
+
+        if (el.classList.contains('anim-stagger')) {
+          const items = el.querySelectorAll('.anim-item');
+          anime({
+            targets: items,
+            opacity: [0, 1],
+            translateY: [18, 0],
+            delay: anime.stagger(90),
+            duration: 700,
+            easing: 'easeOutQuart'
+          });
+        }
+
+        if (el.classList.contains('anim-underline')) {
+          anime({
+            targets: el,
+            width: ['0px', '80px'],
+            duration: 600,
+            easing: 'easeOutCubic'
+          });
+        }
+
+        if (el.matches('svg.anim-draw, .anim-draw svg')) {
+          const paths = el.querySelectorAll('path, line, polyline, polygon, circle, rect');
+          paths.forEach(p => {
+            const len = anime.setDashoffset(p);
+            p.setAttribute('stroke-dasharray', String(len));
+            p.setAttribute('stroke-dashoffset', String(len));
+          });
+          anime({
+            targets: paths,
+            strokeDashoffset: [anime.setDashoffset, 0],
+            duration: 1200,
+            delay: anime.stagger(150),
+            easing: 'easeInOutSine'
+          });
+        }
+
+        if (el.hasAttribute('data-count-to')) {
+          const to = Number(el.getAttribute('data-count-to')) || 0;
+          const isFloat = String(el.getAttribute('data-count-to')).includes('.');
+          const data = { val: 0 };
+          anime({
+            targets: data,
+            val: to,
+            duration: 1200,
+            easing: 'easeOutExpo',
+            round: isFloat ? 100 : 1,
+            update: () => {
+              el.textContent = isFloat ? (data.val / 100).toFixed(2) : String(Math.round(data.val));
+            }
+          });
+        }
+
+        io.unobserve(el);
       }
-    }, { rootMargin: "0px 0px -5% 0px", threshold: 0.1 });
-    els.forEach(el => io.observe(el));
+    }, { rootMargin: '0px 0px -5% 0px', threshold: 0.12 });
+
+    document.querySelectorAll('.fade-in, .anim-card, .anim-stagger, .anim-underline, .anim-draw, [data-count-to]').forEach(el => io.observe(el));
+
     return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const prefsReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefsReduced || !window.anime) return;
+
+    const cards = Array.from(document.querySelectorAll('.tilt-card'));
+    if (!cards.length) return;
+
+    const handleMove = (e) => {
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width;
+      const py = (e.clientY - rect.top) / rect.height;
+      const rotateX = (0.5 - py) * 6;
+      const rotateY = (px - 0.5) * 6;
+      anime({
+        targets: el,
+        rotateX,
+        rotateY,
+        duration: 180,
+        easing: 'easeOutQuad'
+      });
+    };
+    const handleLeave = (e) => {
+      anime({
+        targets: e.currentTarget,
+        rotateX: 0,
+        rotateY: 0,
+        duration: 300,
+        easing: 'easeOutCubic'
+      });
+    };
+
+    cards.forEach(el => {
+      el.addEventListener('mousemove', handleMove);
+      el.addEventListener('mouseleave', handleLeave);
+    });
+
+    return () => {
+      cards.forEach(el => {
+        el.removeEventListener('mousemove', handleMove);
+        el.removeEventListener('mouseleave', handleLeave);
+      });
+    };
   }, []);
 }
 
@@ -446,6 +591,15 @@
                 <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
                   Security<span className="text-wcd-accent">     for everyone</span>.
                 </h1>
+                <svg className="anim-draw mt-2" width="220" height="16" viewBox="0 0 220 16" fill="none">
+                  <defs>
+                    <linearGradient id="g1" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stopColor="#12D6DF" />
+                      <stop offset="100%" stopColor="#7C4DFF" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M2 14 Q 20 2, 40 10 T 80 10 T 120 10 T 160 10 T 200 10" stroke="url(#g1)" strokeWidth="2" fill="none" strokeLinecap="round"></path>
+                </svg>
                 <p className="mt-3 text-white/75">
                   World Cyber Defense (WCD) mobilizes volunteer experts across the globe to detect, deter,
                   and disrupt cyber threats before they harm people and businesses.
@@ -464,9 +618,9 @@
               </div>
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-tr from-wcd-accent/20 to-wcd-accent2/20 blur-2xl rounded-3xl"></div>
-                <div className="relative grid grid-cols-2 gap-4">
+                <div className="relative grid grid-cols-2 gap-4 anim-stagger">
                   {["Proactive Monitoring", "Incident Response", "Threat Intel", "Education"].map((t, i) => (
-                    <div key={t} className="rounded-2xl glass p-4 fade-in" style={{ transitionDelay: `${i * 80}ms` }}>
+                    <div key={t} className="rounded-2xl glass p-4 anim-item" style={{ transitionDelay: `${i * 80}ms` }}>
                       <div className="flex items-center gap-2 mb-2 text-white/80">
                         <i data-lucide={i % 2 ? "activity" : "radar"} className="w-4 h-4"></i>
                         <span className="text-sm font-medium">{t}</span>
@@ -483,6 +637,16 @@
               </div>
             </div>
           </section>
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[{ label: "Countries", to: 60 }, { label: "Volunteers", to: 150 }, { label: "Incidents Prevented", to: 320 }, { label: "Open Resources", to: 24 }].map(s => (
+              <div key={s.label} className="rounded-2xl ring-card p-4 bg-white/5 text-center">
+                <div className="text-2xl md:text-3xl font-extrabold">
+                  <span data-count-to={s.to} className="counter">0</span>+
+                </div>
+                <div className="text-xs md:text-sm text-white/60 mt-1">{s.label}</div>
+              </div>
+            ))}
+          </div>
           <div className="mt-6 grid md:grid-cols-3 gap-6">
             <SectionCard title="What We Do" subtitle="Community-powered protection for everyone.">
               <ul className="list-disc list-inside text-white/75 space-y-2">
@@ -1271,6 +1435,7 @@
     function App() {
       const route = useHashRoute();
       const [mobileOpen, setMobileOpen] = useState(false);
+      useScrollProgress();
 
       // default route
       useEffect(() => {
