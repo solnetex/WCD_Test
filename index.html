@@ -638,7 +638,7 @@
             </div>
           </section>
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[{ label: "Countries", to: 60 }, { label: "Volunteers", to: 150 }, { label: "Incidents Prevented", to: 320 }, { label: "Open Resources", to: 24 }].map(s => (
+            {[{ label: "Countries", to: 60 }, { label: "teams", to: 150 }, { label: "Available Positions", to: 320 }, { label: "Open Resources", to: 24 }].map(s => (
               <div key={s.label} className="rounded-2xl ring-card p-4 bg-white/5 text-center">
                 <div className="text-2xl md:text-3xl font-extrabold">
                   <span data-count-to={s.to} className="counter">0</span>+
@@ -745,9 +745,9 @@
 
     function Teams() {
       const regions = [
-        { name: "North America", members: "67", lead: "none", channels: 1 },
-        { name: "Europe", members: "78", lead: "none", channels: 1 },
-        { name: "Asia", members: "4", lead: "none", channels: 1 },
+        { name: "North America", members: "7", lead: "none", channels: 1 },
+        { name: "Europe", members: "8", lead: "none", channels: 1 },
+        { name: "Asia", members: "5", lead: "none", channels: 1 },
         { name: "South America", members: "0", lead: "none", channels: 1 },
         { name: "Oceania", members: "2", lead: "none", channels: 1 },
         { name: "Africa", members: "0", lead: "none", channels: 1 },
